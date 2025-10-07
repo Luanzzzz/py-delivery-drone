@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 class Cargo:
     def __init__(self, weight: int) -> None:
         self.weight = weight
@@ -7,14 +10,11 @@ class BaseRobot:
     def __init__(self,
                  name: str,
                  weight: int,
-                 coords: list = None
+                 coords: list | None = None
                  ) -> None:
         self.name = name
         self.weight = weight
-        if coords is None:
-            self.coords = [0, 0]
-        else:
-            self.coords = coords
+        self.coords = coords or [0, 0]
 
     def go_forward(self, step: int = 1) -> None:
         self.coords[1] += step
@@ -36,13 +36,13 @@ class FlyingRobot(BaseRobot):
     def __init__(self,
                  name: str,
                  weight: int,
-                 coords: list = None
+                 coords: list | None = None,
                  ) -> None:
-        super().__init__(name=name, weight=weight)
-        if coords is None:
-            self.coords = [0, 0, 0]
-        else:
-            self.coords = coords
+        coords_2d = coords[:2] if coords else None
+
+        super().__init__(name=name, weight=weight, coords=coords_2d)
+        z_coord = coords[2] if coords and len(coords) > 2 else 0
+        self.coords.append(z_coord)
 
     def go_up(self, step: int = 1) -> None:
         self.coords[2] += step
@@ -57,8 +57,8 @@ class DeliveryDrone(FlyingRobot):
         name: str,
         weight: int,
         max_load_weight: int,
-        coords: list = None,
-        current_load: Cargo = None
+        coords: list | None = None,
+        current_load: Cargo | None = None,
     ) -> None:
         super().__init__(name=name, weight=weight, coords=coords)
         self.max_load_weight = max_load_weight
